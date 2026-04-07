@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<title>FWA Monitor</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --blue-50: #E6F1FB;
+    --blue-100: #B5D4F4;
+    --blue-400: #378ADD;
+    --blue-600: #185FA5;
+    --blue-800: #0C447C;
+    --teal-50: #E1F5EE;
+    --teal-400: #1D9E75;
+    --teal-600: #0F6E56;
+    --teal-800: #085041;
+    --amber-50: #FAEEDA;
+    --amber-400: #BA7517;
+    --amber-600: #854F0B;
+    --green-50: #EAF3DE;
+    --green-400: #639922;
+    --green-600: #3B6D11;
+    --gray-50: #F1EFE8;
+    --gray-100: #D3D1C7;
+    --gray-400: #888780;
+    --gray-600: #5F5E5A;
+    --gray-800: #444441;
+    --coral-50: #FAECE7;
+    --coral-400: #D85A30;
+    --coral-600: #993C1D;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+    background: #f5f7fa;
+    min-height: 100vh;
+    color: #1a1a2e;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── AUTH SCREEN ─── */
+  #auth-screen {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1.5rem;
+    background: linear-gradient(160deg, #EBF4FF 0%, #f5f7fa 60%);
+  }
+
+  .auth-card {
+    width: 100%;
+    max-width: 360px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 2rem 1.75rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  .auth-logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1.75rem;
+  }
+
+  .auth-logo-icon {
+    width: 40px; height: 40px;
+    background: var(--blue-600);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .auth-logo-icon svg { width: 22px; height: 22px; fill: #fff; }
+
+  .auth-logo span {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--blue-800);
+    letter-spacing: -0.3px;
+  }
+
+  .auth-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1a1a2e;
+    margin-bottom: 6px;
+    letter-spacing: -0.5px;
+  }
+
+  .auth-subtitle {
+    font-size: 14px;
+    color: var(--gray-600);
+    margin-bottom: 1.75rem;
+    line-height: 1.5;
+  }
+
+  .form-group { margin-bottom: 1rem; }
+
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 15px;
+    color: #1a1a2e;
+    background: #fafafa;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .form-input:focus {
+    outline: none;
+    border-color: var(--blue-400);
+    background: #fff;
+  }
+
+  select.form-input {
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24'%3E%3Cpath fill='%23888' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 14px center;
+    padding-right: 40px;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 14px;
+    background: var(--blue-600);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 0.5rem;
+    transition: background 0.2s, transform 0.1s;
+    -webkit-appearance: none;
+  }
+
+  .btn-primary:active { transform: scale(0.98); background: var(--blue-800); }
+
+  .btn-google {
+    width: 100%;
+    padding: 13px;
+    background: #fff;
+    color: #1a1a2e;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    margin-top: 0.75rem;
+    transition: background 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .btn-google:active { background: #f5f7fa; }
+
+  /* ─── MAIN APP ─── */
+  #main-app { display: none; min-height: 100vh; }
+
+  .app-header {
+    background: #fff;
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid #eef0f3;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-left { display: flex; flex-direction: column; }
+  .header-greeting { font-size: 12px; color: var(--gray-600); }
+  .header-name { font-size: 16px; font-weight: 600; color: #1a1a2e; letter-spacing: -0.3px; }
+
+  .header-avatar {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: var(--blue-600);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+
+  .app-body { padding: 20px 16px 100px; }
+
+  /* Date & time bar */
+  .datetime-bar {
+    background: var(--blue-600);
+    border-radius: 14px;
+    padding: 16px 18px;
+    color: #fff;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .datetime-date { font-size: 13px; opacity: 0.8; }
+  .datetime-time { font-size: 28px; font-weight: 700; letter-spacing: -1px; }
+  .datetime-day { font-size: 13px; opacity: 0.8; margin-top: 2px; }
+
+  .work-status-badge {
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    text-align: center;
+  }
+
+  /* Progress tracker */
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 12px;
+  }
+
+  .progress-track {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .progress-steps {
+    display: flex;
+    align-items: flex-start;
+    position: relative;
+    padding: 8px 0;
+  }
+
+  .progress-step {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .step-circle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    transition: all 0.3s;
+  }
+
+  .step-circle.done {
+    background: var(--teal-400);
+    color: #fff;
+  }
+
+  .step-circle.active {
+    background: var(--blue-600);
+    color: #fff;
+    box-shadow: 0 0 0 4px var(--blue-50);
+  }
+
+  .step-circle.pending {
+    background: var(--gray-50);
+    color: var(--gray-400);
+    border: 2px solid var(--gray-100);
+  }
+
+  .step-circle.missed {
+    background: #fee2e2;
+    color: #dc2626;
+  }
+
+  .step-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--gray-600);
+    text-align: center;
+    line-height: 1.3;
+  }
+
+  .step-time {
+    font-size: 10px;
+    color: var(--gray-400);
+    text-align: center;
+    margin-top: 2px;
+  }
+
+  .step-connector {
+    position: absolute;
+    top: 18px;
+    left: calc(50% + 18px);
+    right: calc(-50% + 18px);
+    height: 2px;
+    background: var(--gray-100);
+    z-index: 0;
+  }
+
+  .step-connector.done { background: var(--teal-400); }
+
+  /* Check-in card */
+  .checkin-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    border: 1.5px solid transparent;
+    transition: border-color 0.2s;
+  }
+
+  .checkin-card.active-card { border-color: var(--blue-400); }
+  .checkin-card.done-card { border-color: var(--teal-400); opacity: 0.85; }
+  .checkin-card.missed-card { border-color: #fca5a5; }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+
+  .card-title-group { display: flex; align-items: center; gap: 10px; }
+
+  .card-icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .card-icon.blue { background: var(--blue-50); }
+  .card-icon.teal { background: var(--teal-50); }
+  .card-icon.amber { background: var(--amber-50); }
+
+  .card-title { font-size: 15px; font-weight: 600; color: #1a1a2e; }
+  .card-window { font-size: 12px; color: var(--gray-600); margin-top: 1px; }
+
+  .badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-pending { background: var(--gray-50); color: var(--gray-600); }
+  .badge-active { background: var(--blue-50); color: var(--blue-600); }
+  .badge-done { background: var(--teal-50); color: var(--teal-600); }
+  .badge-missed { background: #fee2e2; color: #dc2626; }
+  .badge-early { background: var(--amber-50); color: var(--amber-600); }
+
+  /* Camera area */
+  .camera-area {
+    background: #f0f4f8;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 12px;
+    aspect-ratio: 4/3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .camera-area video, .camera-area img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+  }
+
+  .camera-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: var(--gray-400);
+  }
+
+  .camera-placeholder svg { width: 36px; height: 36px; }
+  .camera-placeholder span { font-size: 13px; }
+
+  .camera-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .capture-btn {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #fff;
+    border: 4px solid rgba(255,255,255,0.6);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    transition: transform 0.1s;
+  }
+  .capture-btn:active { transform: scale(0.93); }
+
+  .capture-inner {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid rgba(0,0,0,0.1);
+  }
+
+  .retake-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(0,0,0,0.5);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  /* Location info */
+  .location-info {
+    background: var(--blue-50);
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .location-info svg { width: 16px; height: 16px; fill: var(--blue-600); flex-shrink: 0; margin-top: 2px; }
+
+  .location-text { font-size: 13px; color: var(--blue-800); line-height: 1.4; flex: 1; }
+  .location-text strong { display: block; font-weight: 600; }
+
+  .btn-checkin {
+    width: 100%;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    -webkit-appearance: none;
+  }
+
+  .btn-checkin.blue { background: var(--blue-600); color: #fff; }
+  .btn-checkin.blue:active { background: var(--blue-800); transform: scale(0.98); }
+  .btn-checkin.teal { background: var(--teal-400); color: #fff; }
+  .btn-checkin.teal:active { background: var(--teal-600); transform: scale(0.98); }
+  .btn-checkin.amber { background: var(--amber-400); color: #fff; }
+  .btn-checkin.amber:active { background: var(--amber-600); transform: scale(0.98); }
+  .btn-checkin:disabled { background: var(--gray-100); color: var(--gray-400); cursor: not-allowed; transform: none; }
+
+  /* Done state */
+  .done-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--teal-50);
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .done-info svg { width: 20px; height: 20px; fill: var(--teal-400); flex-shrink: 0; }
+  .done-info-text { font-size: 13px; color: var(--teal-800); line-height: 1.4; }
+  .done-info-text strong { display: block; font-size: 14px; font-weight: 600; }
+
+  .selfie-thumb {
+    width: 48px; height: 48px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+    border: 2px solid var(--teal-400);
+  }
+
+  /* Log section */
+  .log-card {
+    background: #fff;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+  }
+
+  .log-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .log-item:last-child { border-bottom: none; }
+
+  .log-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .log-content { flex: 1; }
+  .log-label { font-size: 13px; font-weight: 500; color: #1a1a2e; }
+  .log-meta { font-size: 12px; color: var(--gray-600); margin-top: 1px; }
+
+  .log-time {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--gray-800);
+  }
+
+  /* Bottom nav */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-top: 1px solid #eef0f3;
+    display: flex;
+    padding: 8px 0 20px;
+    z-index: 100;
+  }
+
+  .nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    padding: 4px 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .nav-icon { width: 22px; height: 22px; }
+  .nav-label { font-size: 10px; font-weight: 500; color: var(--gray-400); }
+  .nav-item.active .nav-label { color: var(--blue-600); }
+  .nav-item.active .nav-icon path { fill: var(--blue-600); }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 16px; right: 16px;
+    background: #1a1a2e;
+    color: #fff;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    z-index: 999;
+    transform: translateY(20px);
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show { transform: translateY(0); opacity: 1; }
+  .toast.success { background: var(--teal-600); }
+  .toast.error { background: #dc2626; }
+
+  /* Loading overlay */
+  .loading-overlay {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(255,255,255,0.85);
+    z-index: 500;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .loading-overlay.show { display: flex; }
+  .spinner {
+    width: 40px; height: 40px;
+    border: 3px solid var(--blue-100);
+    border-top-color: var(--blue-600);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+
+  .loading-text { font-size: 14px; color: var(--gray-600); }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* History page */
+  #history-page { display: none; }
+  .history-item {
+    background: #fff;
+    border-radius: 12px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .history-date-block {
+    min-width: 44px;
+    text-align: center;
+  }
+
+  .h-day { font-size: 22px; font-weight: 700; color: var(--blue-600); line-height: 1; }
+  .h-mon { font-size: 11px; color: var(--gray-600); font-weight: 500; }
+
+  .history-dots { display: flex; gap: 4px; align-items: center; }
+  .h-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .history-right { flex: 1; }
+  .history-label { font-size: 13px; font-weight: 600; color: #1a1a2e; }
+  .history-times { font-size: 12px; color: var(--gray-600); margin-top: 3px; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════
+     AUTH SCREEN
+═══════════════════════════════════ -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <div class="auth-logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg>
+      </div>
+      <span>FWA Monitor</span>
+    </div>
+    <div class="auth-title">Selamat datang</div>
+    <div class="auth-subtitle">Pilih nama Anda untuk mulai monitoring kehadiran kerja fleksibel.</div>
+
+    <div class="form-group">
+      <label class="form-label">Pilih Nama</label>
+      <select class="form-input" id="select-user" onchange="onUserSelect()">
+        <option value="">-- Pilih nama Anda --</option>
+        <option value="AH">Ahmad Hadi</option>
+        <option value="LA">Luthfi Alfaritzi</option>
+        <option value="AZ">Aripin Zainal M</option>
+        <option value="FR">Fitri Ratna</option>
+        <option value="MA">Melisa Arianti</option>
+        <option value="GP">Gilang Pramudita</option>
+        <option value="RA">Rizky Arie Prima</option>
+        <option value="FZ">Fauzi</option>
+        <option value="AA">Arief Ardiansyah</option>
+        <option value="AR">Agung Rizqi Wahyudin</option>
+        <option value="NH">Novia Harlizah</option>
+        <option value="DF">Dhea Fariha</option>
+        <option value="LM">Leo Marisco Simamora</option>
+        <option value="RS">Ratna Sari Dewi</option>
+        <option value="DP">Dimas Pradipta</option>
+        <option value="RF">Riza Fahlepi</option>
+      </select>
+    </div>
+
+    <div id="user-preview" style="display:none;background:var(--blue-50);border-radius:12px;padding:14px 16px;margin-bottom:1rem;display:none;align-items:center;gap:12px;">
+      <div id="preview-avatar" style="width:44px;height:44px;border-radius:50%;background:var(--blue-600);color:#fff;font-size:16px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0;"></div>
+      <div>
+        <div id="preview-name" style="font-size:15px;font-weight:600;color:var(--blue-800);"></div>
+        <div id="preview-nik" style="font-size:12px;color:var(--blue-600);margin-top:2px;"></div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="btn-login" onclick="doLogin()" disabled style="opacity:0.5;">Masuk</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════
+     MAIN APP
+═══════════════════════════════════ -->
+<div id="main-app">
+  <!-- Header -->
+  <div class="app-header">
+    <div class="header-left">
+      <span class="header-greeting">Halo,</span>
+      <span class="header-name" id="header-name">Nama Karyawan</span>
+    </div>
+    <div class="header-avatar" id="header-avatar" onclick="doLogout()">AB</div>
+  </div>
+
+  <!-- Body -->
+  <div class="app-body">
+
+    <!-- Page: Home -->
+    <div id="home-page">
+      <!-- Date time bar -->
+      <div class="datetime-bar">
+        <div>
+          <div class="datetime-date" id="display-date">Selasa, 7 Januari 2025</div>
+          <div class="datetime-time" id="display-time">07:30</div>
+          <div class="datetime-day" id="display-status">Hari kerja aktif</div>
+        </div>
+        <div class="work-status-badge" id="work-status-badge">WFH</div>
+      </div>
+
+      <!-- Progress tracker -->
+      <div class="section-title">Progress Hari Ini</div>
+      <div class="progress-track">
+        <div class="progress-steps">
+          <div class="progress-step">
+            <div class="step-circle" id="step-ci">1</div>
+            <div class="step-label">Check In</div>
+            <div class="step-time">07.00–09.00</div>
+            <div class="step-connector" id="conn-1"></div>
+          </div>
+          <div class="progress-step">
+            <div class="step-circle" id="step-mc">2</div>
+            <div class="step-label">Middle<br>Check In</div>
+            <div class="step-time">12.00–13.00</div>
+            <div class="step-connector" id="conn-2"></div>
+          </div>
+          <div class="progress-step">
+            <div class="step-circle" id="step-co">3</div>
+            <div class="step-label">Check Out</div>
+            <div class="step-time">17.00–20.00</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Check In Card -->
+      <div class="checkin-card" id="card-checkin">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-icon blue">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--blue-600)">
+                <path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Morning Check In</div>
+              <div class="card-window">Jam 07.00 – 09.00</div>
+            </div>
+          </div>
+          <span class="badge" id="badge-ci">Pending</span>
+        </div>
+        <div id="ci-content"><!-- dynamically rendered --></div>
+      </div>
+
+      <!-- Middle Check In Card -->
+      <div class="checkin-card" id="card-middle">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-icon teal">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--teal-400)">
+                <path d="M12 2a10 10 0 1 0 0 20A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Middle Check In</div>
+              <div class="card-window">Jam 12.00 – 13.00</div>
+            </div>
+          </div>
+          <span class="badge" id="badge-mc">Pending</span>
+        </div>
+        <div id="mc-content"><!-- dynamically rendered --></div>
+      </div>
+
+      <!-- Check Out Card -->
+      <div class="checkin-card" id="card-checkout">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-icon amber">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="var(--amber-400)">
+                <path d="M9 17l1.4-1.4L7.8 13H20v-2H7.8l2.6-2.6L9 7l-5 5 5 5zm11-14H4a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2zm0 18H4V5h16v16z"/>
+              </svg>
+            </div>
+            <div>
+              <div class="card-title">Check Out</div>
+              <div class="card-window">Jam 17.00 – 20.00</div>
+            </div>
+          </div>
+          <span class="badge" id="badge-co">Pending</span>
+        </div>
+        <div id="co-content"><!-- dynamically rendered --></div>
+      </div>
+
+      <!-- Today's Log -->
+      <div class="section-title" style="margin-top: 4px;">Log Hari Ini</div>
+      <div class="log-card" id="today-log">
+        <div style="text-align:center; padding: 12px 0; color: var(--gray-400); font-size: 13px;">Belum ada aktivitas hari ini</div>
+      </div>
+    </div>
+
+    <!-- Page: History -->
+    <div id="history-page">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div class="section-title" style="margin-bottom:0;">Riwayat Kehadiran</div>
+        <button onclick="renderHistory()" style="background:var(--blue-50);color:var(--blue-600);border:none;border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600;cursor:pointer;">&#8635; Refresh</button>
+      </div>
+      <div style="font-size:12px;color:var(--gray-400);margin-bottom:14px;">&#9729; = tersinkron dari Google Sheets · 14 hari terakhir</div>
+      <div id="history-list"></div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Nav -->
+  <div class="bottom-nav">
+    <div class="nav-item active" id="nav-home" onclick="showPage('home')">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <path fill="var(--blue-600)" d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+      </svg>
+      <span class="nav-label" style="color:var(--blue-600);">Beranda</span>
+    </div>
+    <div class="nav-item" id="nav-history" onclick="showPage('history')">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <path fill="var(--gray-400)" d="M13 3a9 9 0 1 0 0 18A9 9 0 0 0 13 3zm0 16a7 7 0 1 1 0-14 7 7 0 0 1 0 14zm.5-11H12v6l5.2 3.2.8-1.3-4.5-2.7V8z"/>
+      </svg>
+      <span class="nav-label">Riwayat</span>
+    </div>
+    <div class="nav-item" id="nav-profile" onclick="doLogout()">
+      <svg class="nav-icon" viewBox="0 0 24 24">
+        <path fill="var(--gray-400)" d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/>
+      </svg>
+      <span class="nav-label">Keluar</span>
+    </div>
+  </div>
+</div>
+
+<!-- Loading overlay -->
+<div class="loading-overlay" id="loading-overlay">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loading-text">Menyimpan data...</div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════
+// CONFIG — GANTI URL INI!
+// ═══════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPyGFtMVQfOObldaHBiVl72lAK5G4mciz0e6xlyc2VTQhwHdkR-TVu-nd-Py8LlMQIYA/exec';
+
+// ═══════════════════════════
+// STATE
+// ═══════════════════════════
+let user = null;
+let userLocation = null;
+let streams = { ci: null, mc: null, co: null };
+let photos = { ci: null, mc: null, co: null };
+let checkins = { ci: null, mc: null, co: null };
+let todayLog = [];
+
+const WINDOWS = {
+  ci:  { label: 'Morning Check In', start: 7,  end: 9,  color: 'blue' },
+  mc:  { label: 'Middle Check In',  start: 12, end: 13, color: 'teal' },
+  co:  { label: 'Check Out',        start: 17, end: 20, color: 'amber' }
+};
+
+// ═══════════════════════════
+// INIT
+// ═══════════════════════════
+window.onload = () => {
+  const saved = localStorage.getItem('fwa_user');
+  if (saved) {
+    user = JSON.parse(saved);
+    loadSavedCheckins();
+    enterApp();
+  }
+  startClock();
+};
+
+function startClock() {
+  updateClock();
+  setInterval(updateClock, 30000);
+}
+
+function updateClock() {
+  const now = new Date();
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const el = id => document.getElementById(id);
+  if (el('display-date')) {
+    el('display-date').textContent = `${days[now.getDay()]}, ${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}`;
+    el('display-time').textContent = `${h}:${m}`;
+  }
+  updateProgress();
+  renderCards();
+}
+
+// ═══════════════════════════
+// AUTH
+// ═══════════════════════════
+const USERS = {
+  'AH': { name: 'Ahmad Hadi',      nik: 'EMP-001' },
+  'LA': { name: 'Luthfi Alfaritzi',nik: 'EMP-002' },
+  'AZ': { name: 'Aripin Zainal M', nik: 'EMP-003' },
+  'FR': { name: 'Fitri Ratna',     nik: 'EMP-004' },
+  'MA': { name: 'Melisa Arianti',  nik: 'EMP-005' },
+  'GP': { name: 'Gilang Pramudita', nik: 'EMP-006' },
+  'RA': { name: 'Rizky Arie Prima', nik: 'EMP-007' },
+  'FZ': { name: 'Fauzi',            nik: 'EMP-008' },
+  'AA': { name: 'Arief Ardiansyah',     nik: 'EMP-009' },
+  'AR': { name: 'Agung Rizqi Wahyudin', nik: 'EMP-010' },
+  'NH': { name: 'Novia Harlizah',       nik: 'EMP-011' },
+  'DF': { name: 'Dhea Fariha',          nik: 'EMP-012' },
+  'LM': { name: 'Leo Marisco Simamora', nik: 'EMP-013' },
+  'RS': { name: 'Ratna Sari Dewi',      nik: 'EMP-014' },
+  'DP': { name: 'Dimas Pradipta',       nik: 'EMP-015' },
+  'RF': { name: 'Riza Fahlepi',         nik: 'EMP-016' },
+};
+
+function onUserSelect() {
+  const key = document.getElementById('select-user').value;
+  const preview = document.getElementById('user-preview');
+  const btn = document.getElementById('btn-login');
+  if (!key) {
+    preview.style.display = 'none';
+    btn.disabled = true; btn.style.opacity = '0.5';
+    return;
+  }
+  const u = USERS[key];
+  const initials = u.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('preview-avatar').textContent = initials;
+  document.getElementById('preview-name').textContent = u.name;
+  document.getElementById('preview-nik').textContent = u.nik;
+  preview.style.display = 'flex';
+  btn.disabled = false; btn.style.opacity = '1';
+}
+
+function doLogin() {
+  const key = document.getElementById('select-user').value;
+  if (!key || !USERS[key]) return showToast('Pilih nama Anda terlebih dahulu', 'error');
+  const u = USERS[key];
+  user = { name: u.name, nik: u.nik, divisi: '-' };
+  localStorage.setItem('fwa_user', JSON.stringify(user));
+  loadSavedCheckins();
+  enterApp();
+}
+
+function enterApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'block';
+  document.getElementById('header-name').textContent = user.name;
+  const initials = user.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+  document.getElementById('header-avatar').textContent = initials;
+  getLocation();
+  updateProgress();
+  renderCards();
+  renderHistory();
+}
+
+function doLogout() {
+  if (!confirm('Keluar dari aplikasi?')) return;
+  localStorage.removeItem('fwa_user');
+  localStorage.removeItem('fwa_checkins_' + todayKey());
+  user = null; photos = {ci:null,mc:null,co:null}; checkins = {ci:null,mc:null,co:null};
+  document.getElementById('auth-screen').style.display = 'flex';
+  document.getElementById('main-app').style.display = 'none';
+}
+
+// ═══════════════════════════
+// LOCATION
+// ═══════════════════════════
+function getLocation() {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.getCurrentPosition(pos => {
+    userLocation = { lat: pos.coords.latitude, lng: pos.coords.longitude, acc: Math.round(pos.coords.accuracy) };
+    renderCards();
+  }, () => {
+    userLocation = { lat: 'N/A', lng: 'N/A', acc: 0 };
+  }, { enableHighAccuracy: true, timeout: 10000 });
+}
+
+function locationText() {
+  if (!userLocation) return 'Mengambil lokasi...';
+  if (userLocation.lat === 'N/A') return 'Lokasi tidak tersedia';
+  return `${userLocation.lat.toFixed(5)}, ${userLocation.lng.toFixed(5)} (±${userLocation.acc}m)`;
+}
+
+// ═══════════════════════════
+// TIME WINDOW HELPER
+// ═══════════════════════════
+function getNow() { return new Date(); }
+function getHour() { return getNow().getHours() + getNow().getMinutes() / 60; }
+
+function windowStatus(key) {
+  const h = getHour();
+  const w = WINDOWS[key];
+  if (checkins[key]) return 'done';
+  if (h >= w.start && h < w.end) return 'active';
+  if (h >= w.end) return 'missed';
+  return 'pending';
+}
+
+// ═══════════════════════════
+// PROGRESS TRACKER
+// ═══════════════════════════
+function updateProgress() {
+  const keys = ['ci','mc','co'];
+  const circles = ['step-ci','step-mc','step-co'];
+  const conns = ['conn-1','conn-2'];
+  const icons = {
+    done: `<svg viewBox="0 0 24 24" width="16" height="16" fill="#fff"><path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"/></svg>`,
+    missed: `<svg viewBox="0 0 24 24" width="16" height="16" fill="#dc2626"><path d="M19 6.4L17.6 5 12 10.6 6.4 5 5 6.4l5.6 5.6L5 17.6 6.4 19l5.6-5.6 5.6 5.6 1.4-1.4-5.6-5.6z"/></svg>`
+  };
+
+  keys.forEach((k, i) => {
+    const st = windowStatus(k);
+    const el = document.getElementById(circles[i]);
+    el.className = 'step-circle ' + st;
+    el.innerHTML = st === 'done' ? icons.done : st === 'missed' ? icons.missed : (i+1);
+  });
+
+  // connectors
+  [0,1].forEach(i => {
+    const el = document.getElementById(conns[i]);
+    if (el) el.className = 'step-connector ' + (windowStatus(keys[i]) === 'done' ? 'done' : '');
+  });
+}
+
+// ═══════════════════════════
+// RENDER CARDS
+// ═══════════════════════════
+function renderCards() {
+  renderCard('ci');
+  renderCard('mc');
+  renderCard('co');
+}
+
+function renderCard(key) {
+  const st = windowStatus(key);
+  const card = document.getElementById('card-' + (key === 'co' ? 'checkout' : key === 'mc' ? 'middle' : 'checkin'));
+  const badge = document.getElementById('badge-' + key);
+  const content = document.getElementById(key + '-content');
+  const color = WINDOWS[key].color;
+
+  // Update card style
+  card.className = 'checkin-card';
+  if (st === 'active') card.classList.add('active-card');
+  if (st === 'done') card.classList.add('done-card');
+  if (st === 'missed') card.classList.add('missed-card');
+
+  // Badge
+  const badgeMap = { pending: 'badge-pending Belum Mulai', active: 'badge-active Buka', done: 'badge-done Selesai', missed: 'badge-missed Terlewat', early: 'badge-early' };
+  badge.className = 'badge ' + (st === 'active' ? 'badge-active' : st === 'done' ? 'badge-done' : st === 'missed' ? 'badge-missed' : 'badge-pending');
+  badge.textContent = st === 'active' ? 'Buka' : st === 'done' ? 'Selesai ✓' : st === 'missed' ? 'Terlewat' : 'Belum Mulai';
+
+  // Content
+  if (st === 'done') {
+    const ci = checkins[key];
+    content.innerHTML = `
+      <div class="done-info">
+        ${photos[key] ? `<img class="selfie-thumb" src="${photos[key]}" />` : ''}
+        <div class="done-info-text">
+          <strong>Berhasil direkam ${formatTime(ci.time)}</strong>
+          ${ci.lat !== 'N/A' ? `📍 ${Number(ci.lat).toFixed(4)}, ${Number(ci.lng).toFixed(4)}` : 'Lokasi tidak tersedia'}
+        </div>
+      </div>`;
+    return;
+  }
+
+  if (st === 'pending') {
+    content.innerHTML = `<p style="font-size:13px;color:var(--gray-400);text-align:center;padding:8px 0;">Belum masuk jendela waktu</p>`;
+    return;
+  }
+
+  if (st === 'missed') {
+    content.innerHTML = `<p style="font-size:13px;color:#dc2626;text-align:center;padding:8px 0;">Jendela waktu sudah terlewat</p>`;
+    return;
+  }
+
+  // Active — show camera
+  const videoId = `video-${key}`;
+  const canvasId = `canvas-${key}`;
+  const imgId = `img-${key}`;
+
+  content.innerHTML = `
+    <div class="camera-area" id="cam-area-${key}">
+      ${photos[key]
+        ? `<img id="${imgId}" src="${photos[key]}" /><button class="retake-btn" onclick="retakePhoto('${key}')">Ulangi</button>`
+        : `<video id="${videoId}" autoplay playsinline muted></video>
+           <div class="camera-overlay"><button class="capture-btn" onclick="capturePhoto('${key}')"><div class="capture-inner"></div></button></div>`}
+    </div>
+    <canvas id="${canvasId}" style="display:none"></canvas>
+    <div class="location-info">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.2 7 13 7 13s7-7.8 7-13c0-3.9-3.1-7-7-7zm0 9.5c-1.4 0-2.5-1.1-2.5-2.5S10.6 6.5 12 6.5s2.5 1.1 2.5 2.5S13.4 11.5 12 11.5z"/></svg>
+      <div class="location-text"><strong>Lokasi Anda</strong>${locationText()}</div>
+    </div>
+    <button class="btn-checkin ${color}" ${!photos[key] ? 'disabled' : ''} id="btn-${key}" onclick="submitCheckin('${key}')">
+      ${WINDOWS[key].label}
+    </button>`;
+
+  if (!photos[key]) startCamera(key, videoId);
+}
+
+// ═══════════════════════════
+// CAMERA
+// ═══════════════════════════
+async function startCamera(key, videoId) {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 480 } }
+    });
+    streams[key] = stream;
+    const v = document.getElementById(videoId);
+    if (v) v.srcObject = stream;
+  } catch(e) {
+    showToast('Kamera tidak dapat diakses. Pastikan izin kamera sudah diberikan.', 'error');
+  }
+}
+
+function stopCamera(key) {
+  if (streams[key]) { streams[key].getTracks().forEach(t => t.stop()); streams[key] = null; }
+}
+
+function capturePhoto(key) {
+  const v = document.getElementById(`video-${key}`);
+  const c = document.getElementById(`canvas-${key}`);
+  if (!v || !c) return;
+  c.width = v.videoWidth || 640;
+  c.height = v.videoHeight || 480;
+  c.getContext('2d').drawImage(v, 0, 0);
+  photos[key] = c.toDataURL('image/jpeg', 0.7);
+  stopCamera(key);
+  renderCard(key);
+  // enable submit
+  const btn = document.getElementById('btn-' + key);
+  if (btn) btn.disabled = false;
+}
+
+function retakePhoto(key) {
+  photos[key] = null;
+  renderCard(key);
+}
+
+// ═══════════════════════════
+// SUBMIT
+// ═══════════════════════════
+async function submitCheckin(key) {
+  if (!photos[key]) return showToast('Ambil foto selfie terlebih dahulu', 'error');
+  if (!userLocation) return showToast('Menunggu data lokasi...', 'error');
+
+  const now = getNow();
+  const data = {
+    action: 'checkin',
+    type: key,
+    name: user.name,
+    nik: user.nik,
+    divisi: user.divisi,
+    time: now.toISOString(),
+    lat: userLocation.lat,
+    lng: userLocation.lng,
+    accuracy: userLocation.acc,
+    photo: photos[key]
+  };
+
+  showLoading('Menyimpan data ke Google Sheets...');
+
+  try {
+    const resp = await fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify(data)
+    });
+    const result = await resp.json();
+
+    if (result.status === 'ok') {
+      checkins[key] = { time: now, lat: location.lat, lng: location.lng };
+      saveCheckins();
+      addLog(key, now);
+      renderCards();
+      updateProgress();
+      renderHistory();
+      showToast(WINDOWS[key].label + ' berhasil disimpan!', 'success');
+    } else {
+      showToast('Gagal menyimpan: ' + (result.message || 'Error tidak diketahui'), 'error');
+    }
+  } catch(e) {
+    // Demo mode jika URL belum dikonfigurasi
+    if (APPS_SCRIPT_URL.includes('PASTE_YOUR')) {
+      checkins[key] = { time: now, lat: location.lat, lng: location.lng };
+      saveCheckins();
+      addLog(key, now);
+      renderCards();
+      updateProgress();
+      renderHistory();
+      showToast('[Demo] ' + WINDOWS[key].label + ' berhasil (belum terhubung ke Sheets)', 'success');
+    } else {
+      showToast('Koneksi gagal. Periksa jaringan Anda.', 'error');
+    }
+  }
+  hideLoading();
+}
+
+// ═══════════════════════════
+// LOG & HISTORY
+// ═══════════════════════════
+function addLog(key, time) {
+  todayLog.push({ key, time, label: WINDOWS[key].label });
+  renderLog();
+}
+
+function renderLog() {
+  const el = document.getElementById('today-log');
+  if (todayLog.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:12px 0;color:var(--gray-400);font-size:13px;">Belum ada aktivitas hari ini</div>';
+    return;
+  }
+  const colors = { ci: '#378ADD', mc: '#1D9E75', co: '#BA7517' };
+  el.innerHTML = todayLog.map(l => `
+    <div class="log-item">
+      <div class="log-dot" style="background:${colors[l.key]}"></div>
+      <div class="log-content">
+        <div class="log-label">${l.label}</div>
+        <div class="log-meta">${user.name} · ${user.nik}</div>
+      </div>
+      <div class="log-time">${formatTime(l.time)}</div>
+    </div>`).join('');
+}
+
+async function renderHistory() {
+  const el = document.getElementById('history-list');
+  el.innerHTML = '<div style="text-align:center;padding:24px 0;color:var(--gray-400);font-size:13px;">Memuat riwayat...</div>';
+
+  // Fetch from Google Sheets via Apps Script
+  let sheetRows = [];
+  try {
+    const url = APPS_SCRIPT_URL + '?action=history&nik=' + encodeURIComponent(user.nik);
+    const resp = await fetch(url);
+    const result = await resp.json();
+    if (result.status === 'ok') sheetRows = result.data || [];
+  } catch(e) {
+    // fallback to localStorage if fetch fails
+  }
+
+  // Group sheet rows by date
+  const sheetByDate = {};
+  sheetRows.forEach(row => {
+    const dateKey = row.tanggal; // format dd/MM/yyyy
+    if (!sheetByDate[dateKey]) sheetByDate[dateKey] = {};
+    const typeMap = { 'Morning Check In': 'ci', 'Middle Check In': 'mc', 'Check Out': 'co' };
+    const k = typeMap[row.tipe];
+    if (k) sheetByDate[dateKey][k] = { jam: row.jam, status: row.status, lat: row.lat, lng: row.lng };
+  });
+
+  // Build 14 days list
+  const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+  const rows = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const isoKey = d.toISOString().substring(0,10);
+    const ddmmyyyy = d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'}).replace(/\//g,'/');
+    // Try sheet data first, fallback to localStorage
+    const sheetData = sheetByDate[ddmmyyyy] || null;
+    const localData = JSON.parse(localStorage.getItem('fwa_history_' + isoKey) || 'null');
+
+    // Merge: sheet data wins, local as fallback
+    const data = {};
+    if (localData) {
+      ['ci','mc','co'].forEach(k => { if (localData[k]) data[k] = { jam: localData[k] }; });
+    }
+    if (sheetData) {
+      Object.assign(data, sheetData);
+    }
+
+    if (Object.keys(data).length > 0 || i === 0) {
+      rows.push({ date: d, data, fromSheet: !!sheetData });
+    }
+  }
+
+  if (rows.length === 0) {
+    el.innerHTML = '<div style="text-align:center;padding:24px 0;color:var(--gray-400);font-size:13px;">Belum ada riwayat kehadiran</div>';
+    return;
+  }
+
+  const colorMap = { ci: '#378ADD', mc: '#1D9E75', co: '#BA7517' };
+  const labelMap = { ci: 'CI', mc: 'MCi', co: 'CO' };
+
+  el.innerHTML = rows.map(r => {
+    const d = r.data;
+    const dots = ['ci','mc','co'].map(k =>
+      `<div class="h-dot" style="background:${d[k] ? colorMap[k] : '#D3D1C7'}" title="${WINDOWS[k].label}"></div>`
+    ).join('');
+
+    const details = ['ci','mc','co'].filter(k => d[k]).map(k => {
+      const jam = d[k].jam || d[k];
+      const st = d[k].status || '';
+      const stColor = st === 'Terlambat' ? '#dc2626' : st === 'Tepat Waktu' ? '#1D9E75' : '#888780';
+      return `<span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px;">
+        <span style="width:8px;height:8px;border-radius:50%;background:${colorMap[k]};display:inline-block;"></span>
+        <span style="font-size:12px;color:#444;">${WINDOWS[k].label}: <strong>${jam}</strong></span>
+        ${st ? `<span style="font-size:11px;color:${stColor};font-weight:600;">(${st})</span>` : ''}
+      </span>`;
+    }).join('');
+
+    const isToday = r.date.toDateString() === new Date().toDateString();
+    const complete = ['ci','mc','co'].every(k => d[k]);
+    const completeBadge = complete
+      ? '<span style="font-size:10px;font-weight:600;background:#E1F5EE;color:#0F6E56;padding:2px 8px;border-radius:10px;margin-left:6px;">Lengkap</span>'
+      : '';
+
+    return `<div class="history-item" style="${isToday ? 'border:1.5px solid var(--blue-400);' : ''}">
+      <div class="history-date-block">
+        <div class="h-day">${r.date.getDate()}</div>
+        <div class="h-mon">${months[r.date.getMonth()]}</div>
+      </div>
+      <div style="flex:1;min-width:0;">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+          ${dots}
+          ${completeBadge}
+          ${isToday ? '<span style="font-size:10px;font-weight:600;background:#E6F1FB;color:#185FA5;padding:2px 8px;border-radius:10px;">Hari ini</span>' : ''}
+          ${r.fromSheet ? '<span style="font-size:10px;color:#888;">&#9729;</span>' : ''}
+        </div>
+        <div class="history-label">${r.date.toLocaleDateString('id-ID',{weekday:'long', day:'numeric', month:'long'})}</div>
+        <div style="margin-top:6px;display:flex;flex-wrap:wrap;gap:2px;">${details || '<span style="font-size:12px;color:var(--gray-400);">Tidak ada data</span>'}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ═══════════════════════════
+// PERSISTENCE
+// ═══════════════════════════
+function todayKey() { return new Date().toISOString().substring(0,10); }
+
+function saveCheckins() {
+  localStorage.setItem('fwa_checkins_' + todayKey(), JSON.stringify(checkins));
+  // save to history
+  const hist = {};
+  ['ci','mc','co'].forEach(k => { if (checkins[k]) hist[k] = formatTime(checkins[k].time); });
+  localStorage.setItem('fwa_history_' + todayKey(), JSON.stringify(hist));
+}
+
+function loadSavedCheckins() {
+  const saved = JSON.parse(localStorage.getItem('fwa_checkins_' + todayKey()) || 'null');
+  if (saved) {
+    checkins = {
+      ci: saved.ci ? { ...saved.ci, time: new Date(saved.ci.time) } : null,
+      mc: saved.mc ? { ...saved.mc, time: new Date(saved.mc.time) } : null,
+      co: saved.co ? { ...saved.co, time: new Date(saved.co.time) } : null,
+    };
+    todayLog = [];
+    ['ci','mc','co'].forEach(k => { if (checkins[k]) addLog(k, checkins[k].time); });
+  }
+}
+
+// ═══════════════════════════
+// HELPERS
+// ═══════════════════════════
+function formatTime(date) {
+  const d = date instanceof Date ? date : new Date(date);
+  return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+function showLoading(msg = 'Memuat...') {
+  document.getElementById('loading-text').textContent = msg;
+  document.getElementById('loading-overlay').classList.add('show');
+}
+
+function hideLoading() {
+  document.getElementById('loading-overlay').classList.remove('show');
+}
+
+function showPage(page) {
+  document.getElementById('home-page').style.display = page === 'home' ? 'block' : 'none';
+  document.getElementById('history-page').style.display = page === 'history' ? 'block' : 'none';
+  ['home','history','profile'].forEach(p => {
+    document.getElementById('nav-' + p)?.classList.remove('active');
+  });
+  document.getElementById('nav-' + page)?.classList.add('active');
+  if (page === 'history') renderHistory();
+}
+</script>
+
+</body>
+</html>
