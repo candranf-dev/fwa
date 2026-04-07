@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FWA Admin Dashboard</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --blue-50:  #E6F1FB; --blue-100: #B5D4F4; --blue-400: #378ADD;
+  --blue-600: #185FA5; --blue-800: #0C447C;
+  --teal-50:  #E1F5EE; --teal-400: #1D9E75; --teal-600: #0F6E56;
+  --amber-50: #FAEEDA; --amber-400: #BA7517; --amber-600: #854F0B;
+  --red-50:   #FCEBEB; --red-400:  #E24B4A; --red-600:  #A32D2D;
+  --gray-50:  #F1EFE8; --gray-100: #D3D1C7; --gray-400: #888780;
+  --gray-600: #5F5E5A; --gray-800: #444441;
+  --green-50: #EAF3DE; --green-400: #639922; --green-600: #3B6D11;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+  background: #f0f4f8;
+  color: #1a1a2e;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── HEADER ─── */
+.header {
+  background: var(--blue-800);
+  padding: 0 28px;
+  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 200;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon {
+  width: 32px; height: 32px;
+  background: var(--blue-400);
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.brand-icon svg { width: 18px; height: 18px; fill: #fff; }
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: -0.3px;
+}
+
+.brand-tag {
+  font-size: 11px;
+  background: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-clock {
+  font-size: 13px;
+  color: rgba(255,255,255,0.7);
+  font-variant-numeric: tabular-nums;
+}
+
+.btn-refresh {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex; align-items: center; gap: 6px;
+}
+.btn-refresh:hover { background: rgba(255,255,255,0.25); }
+.btn-refresh svg { width: 14px; height: 14px; fill: #fff; }
+
+/* ─── BODY ─── */
+.body { padding: 24px 28px 40px; max-width: 1280px; margin: 0 auto; }
+
+/* ─── DATE BAR ─── */
+.date-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.date-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.date-input {
+  padding: 8px 12px;
+  border: 1.5px solid #dde2ea;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #1a1a2e;
+  background: #fff;
+  cursor: pointer;
+}
+.date-input:focus { outline: none; border-color: var(--blue-400); }
+
+.btn-today {
+  padding: 8px 14px;
+  background: var(--blue-600);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btn-today:hover { background: var(--blue-800); }
+
+.date-display {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--blue-800);
+  background: var(--blue-50);
+  padding: 7px 14px;
+  border-radius: 8px;
+}
+
+/* ─── SUMMARY CARDS ─── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+@media (max-width: 900px) { .summary-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 500px) { .summary-grid { grid-template-columns: 1fr 1fr; } }
+
+.sum-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 18px 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  border-left: 4px solid transparent;
+}
+
+.sum-card.total  { border-color: var(--blue-400); }
+.sum-card.ci     { border-color: var(--blue-400); }
+.sum-card.mc     { border-color: var(--teal-400); }
+.sum-card.co     { border-color: var(--amber-400); }
+.sum-card.absent { border-color: var(--red-400); }
+
+.sum-label { font-size: 12px; color: var(--gray-600); font-weight: 500; margin-bottom: 6px; }
+.sum-value { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: #1a1a2e; }
+.sum-sub   { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
+
+/* ─── FILTER BAR ─── */
+.filter-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-btn {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid #dde2ea;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.filter-btn.active { background: var(--blue-600); color: #fff; border-color: var(--blue-600); }
+.filter-btn:hover:not(.active) { border-color: var(--blue-400); color: var(--blue-600); }
+
+.search-input {
+  margin-left: auto;
+  padding: 7px 12px;
+  border: 1.5px solid #dde2ea;
+  border-radius: 8px;
+  font-size: 13px;
+  width: 200px;
+  background: #fff;
+}
+.search-input:focus { outline: none; border-color: var(--blue-400); }
+
+/* ─── TABLE ─── */
+.table-wrap {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.table-head {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f0f2f5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.table-title { font-size: 14px; font-weight: 600; color: #1a1a2e; }
+.table-count { font-size: 13px; color: var(--gray-400); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+thead tr { background: #f8fafc; }
+thead th {
+  padding: 11px 16px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--gray-600);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid #f0f2f5;
+  white-space: nowrap;
+}
+
+tbody tr {
+  border-bottom: 1px solid #f5f7fa;
+  transition: background 0.1s;
+}
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #fafbfd; }
+
+td { padding: 12px 16px; color: #1a1a2e; vertical-align: middle; }
+
+.emp-cell { display: flex; align-items: center; gap: 10px; }
+.emp-avatar {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  flex-shrink: 0;
+  color: #fff;
+}
+.emp-name { font-weight: 500; }
+.emp-nik  { font-size: 11px; color: var(--gray-400); }
+
+.checkin-cell { display: flex; flex-direction: column; gap: 4px; }
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill-done    { background: var(--teal-50);  color: var(--teal-600); }
+.pill-missing { background: var(--red-50);   color: var(--red-600); }
+.pill-pending { background: var(--gray-50);  color: var(--gray-600); }
+.pill-late    { background: var(--amber-50); color: var(--amber-600); }
+.pill-ontime  { background: var(--green-50); color: var(--green-600); }
+
+.pill-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.photo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--blue-600);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 500;
+  padding: 3px 8px;
+  background: var(--blue-50);
+  border-radius: 6px;
+  transition: background 0.15s;
+}
+.photo-link:hover { background: var(--blue-100); }
+
+.loc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--teal-600);
+  text-decoration: none;
+  font-size: 12px;
+  padding: 3px 8px;
+  background: var(--teal-50);
+  border-radius: 6px;
+}
+
+/* ─── ABSENT SECTION ─── */
+.absent-section {
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+  overflow: hidden;
+}
+
+.absent-head {
+  padding: 14px 20px;
+  background: var(--red-50);
+  border-bottom: 1px solid #fdd;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.absent-head svg { width: 16px; height: 16px; fill: var(--red-400); }
+.absent-head-title { font-size: 14px; font-weight: 600; color: var(--red-600); }
+
+.absent-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 16px 20px;
+}
+
+.absent-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--red-50);
+  border: 1px solid #fdd;
+  border-radius: 10px;
+  padding: 8px 12px;
+}
+
+.absent-avatar {
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--red-400);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+
+.absent-name { font-size: 13px; font-weight: 500; color: var(--red-600); }
+.absent-nik  { font-size: 11px; color: var(--red-400); }
+
+/* ─── LOADING ─── */
+.loading-row td {
+  text-align: center;
+  padding: 40px;
+  color: var(--gray-400);
+  font-size: 14px;
+}
+
+.spinner-inline {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid var(--gray-100);
+  border-top-color: var(--blue-600);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 8px;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ─── LAST UPDATED ─── */
+.last-updated {
+  text-align: right;
+  font-size: 12px;
+  color: var(--gray-400);
+  margin-bottom: 8px;
+}
+
+/* ─── PHOTO MODAL ─── */
+.modal-bg {
+  display: none;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.65);
+  z-index: 999;
+  align-items: center;
+  justify-content: center;
+}
+.modal-bg.show { display: flex; }
+.modal-box {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 380px;
+  width: 90%;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+}
+.modal-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid #f0f2f5;
+}
+.modal-title { font-size: 14px; font-weight: 600; }
+.modal-close {
+  cursor: pointer;
+  width: 28px; height: 28px;
+  border-radius: 50%;
+  background: var(--gray-50);
+  display: flex; align-items: center; justify-content: center;
+  border: none;
+  font-size: 16px;
+  color: var(--gray-600);
+}
+.modal-img { width: 100%; display: block; }
+.modal-info { padding: 12px 18px; font-size: 13px; color: var(--gray-600); line-height: 1.6; }
+
+@media (max-width: 768px) {
+  .body { padding: 16px; }
+  .summary-grid { grid-template-columns: repeat(2, 1fr); }
+  table { font-size: 12px; }
+  th, td { padding: 10px 10px; }
+  .search-input { width: 140px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ─── HEADER ─── -->
+<div class="header">
+  <div class="header-brand">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24"><path d="M3 13h8V3H3v10zm0 8h8v-6H3v6zm10 0h8V11h-8v10zm0-18v6h8V3h-8z"/></svg>
+    </div>
+    <span class="brand-name">FWA Monitor</span>
+    <span class="brand-tag">Admin</span>
+  </div>
+  <div class="header-right">
+    <span class="header-clock" id="header-clock">--:--:--</span>
+    <button class="btn-refresh" onclick="loadData()">
+      <svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      Refresh
+    </button>
+  </div>
+</div>
+
+<!-- ─── BODY ─── -->
+<div class="body">
+
+  <!-- Date picker -->
+  <div class="date-bar">
+    <span class="date-label">Tanggal</span>
+    <input type="date" class="date-input" id="date-picker" onchange="loadData()">
+    <button class="btn-today" onclick="setToday()">Hari Ini</button>
+    <span class="date-display" id="date-display">—</span>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-grid">
+    <div class="sum-card total">
+      <div class="sum-label">Total Karyawan</div>
+      <div class="sum-value" id="sum-total">16</div>
+      <div class="sum-sub">terdaftar</div>
+    </div>
+    <div class="sum-card ci">
+      <div class="sum-label">Morning Check In</div>
+      <div class="sum-value" id="sum-ci">—</div>
+      <div class="sum-sub">dari 16 karyawan</div>
+    </div>
+    <div class="sum-card mc">
+      <div class="sum-label">Middle Check In</div>
+      <div class="sum-value" id="sum-mc">—</div>
+      <div class="sum-sub">dari 16 karyawan</div>
+    </div>
+    <div class="sum-card co">
+      <div class="sum-label">Check Out</div>
+      <div class="sum-value" id="sum-co">—</div>
+      <div class="sum-sub">dari 16 karyawan</div>
+    </div>
+  </div>
+
+  <!-- Last updated -->
+  <div class="last-updated" id="last-updated">Belum dimuat</div>
+
+  <!-- Filter -->
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="setFilter('all', this)">Semua</button>
+    <button class="filter-btn" onclick="setFilter('checkin', this)">Sudah CI</button>
+    <button class="filter-btn" onclick="setFilter('not-ci', this)">Belum CI</button>
+    <button class="filter-btn" onclick="setFilter('complete', this)">Lengkap</button>
+    <button class="filter-btn" onclick="setFilter('incomplete', this)">Tidak Lengkap</button>
+    <input type="text" class="search-input" placeholder="Cari nama..." oninput="renderTable()" id="search-input">
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <div class="table-head">
+      <span class="table-title">Status Kehadiran Karyawan</span>
+      <span class="table-count" id="table-count">— karyawan</span>
+    </div>
+    <table>
+      <thead>
+        <tr>
+          <th>Karyawan</th>
+          <th>Morning Check In<br><span style="font-weight:400;color:#aaa;">07.00–09.00</span></th>
+          <th>Middle Check In<br><span style="font-weight:400;color:#aaa;">12.00–13.00</span></th>
+          <th>Check Out<br><span style="font-weight:400;color:#aaa;">17.00–20.00</span></th>
+          <th>Kelengkapan</th>
+          <th>Foto / Lokasi</th>
+        </tr>
+      </thead>
+      <tbody id="table-body">
+        <tr class="loading-row"><td colspan="6"><span class="spinner-inline"></span>Memuat data...</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Absent section -->
+  <div class="absent-section" id="absent-section" style="display:none;">
+    <div class="absent-head">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>
+      <span class="absent-head-title">Karyawan Belum Melakukan Check In Sama Sekali</span>
+      <span style="margin-left:auto;font-size:12px;color:var(--red-400);" id="absent-count"></span>
+    </div>
+    <div class="absent-grid" id="absent-grid"></div>
+  </div>
+
+</div>
+
+<!-- Photo Modal -->
+<div class="modal-bg" id="modal" onclick="closeModal(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <span class="modal-title" id="modal-title">Foto Selfie</span>
+      <button class="modal-close" onclick="document.getElementById('modal').classList.remove('show')">✕</button>
+    </div>
+    <img class="modal-img" id="modal-img" src="" alt="Selfie">
+    <div class="modal-info" id="modal-info"></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// CONFIG
+// ══════════════════════════════════
+const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxPyGFtMVQfOObldaHBiVl72lAK5G4mciz0e6xlyc2VTQhwHdkR-TVu-nd-Py8LlMQIYA/exec';
+
+const ALL_EMPLOYEES = [
+  { name: 'Ahmad Hadi',          nik: 'EMP-001' },
+  { name: 'Luthfi Alfaritzi',    nik: 'EMP-002' },
+  { name: 'Aripin Zainal M',     nik: 'EMP-003' },
+  { name: 'Fitri Ratna',         nik: 'EMP-004' },
+  { name: 'Melisa Arianti',      nik: 'EMP-005' },
+  { name: 'Gilang Pramudita',    nik: 'EMP-006' },
+  { name: 'Rizky Arie Prima',    nik: 'EMP-007' },
+  { name: 'Fauzi',               nik: 'EMP-008' },
+  { name: 'Arief Ardiansyah',    nik: 'EMP-009' },
+  { name: 'Agung Rizqi Wahyudin',nik: 'EMP-010' },
+  { name: 'Novia Harlizah',      nik: 'EMP-011' },
+  { name: 'Dhea Fariha',         nik: 'EMP-012' },
+  { name: 'Leo Marisco Simamora',nik: 'EMP-013' },
+  { name: 'Ratna Sari Dewi',     nik: 'EMP-014' },
+  { name: 'Dimas Pradipta',      nik: 'EMP-015' },
+  { name: 'Riza Fahlepi',        nik: 'EMP-016' },
+];
+
+const AVATAR_COLORS = [
+  '#185FA5','#1D9E75','#BA7517','#E24B4A','#7F77DD',
+  '#D85A30','#3B6D11','#0F6E56','#854F0B','#993C1D',
+  '#5F5E5A','#639922','#185FA5','#1D9E75','#A32D2D','#0C447C'
+];
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let sheetData   = [];   // raw rows from sheet
+let employeeMap = {};   // nik → { ci, mc, co }
+let activeFilter = 'all';
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+window.onload = () => {
+  setToday();
+  startClock();
+  // Auto-refresh setiap 5 menit
+  setInterval(loadData, 5 * 60 * 1000);
+};
+
+function startClock() {
+  const tick = () => {
+    const now = new Date();
+    document.getElementById('header-clock').textContent =
+      now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+  };
+  tick();
+  setInterval(tick, 1000);
+}
+
+function setToday() {
+  const today = new Date();
+  const iso = today.toISOString().substring(0, 10);
+  document.getElementById('date-picker').value = iso;
+  loadData();
+}
+
+// ══════════════════════════════════
+// LOAD DATA
+// ══════════════════════════════════
+async function loadData() {
+  const picker = document.getElementById('date-picker');
+  const iso = picker.value;
+  if (!iso) return;
+
+  // Convert ISO (yyyy-MM-dd) → dd/MM/yyyy for Apps Script
+  const [y, m, d] = iso.split('-');
+  const ddmmyyyy = `${d}/${m}/${y}`;
+
+  // Show loading
+  document.getElementById('table-body').innerHTML =
+    '<tr class="loading-row"><td colspan="6"><span class="spinner-inline"></span>Mengambil data dari Google Sheets...</td></tr>';
+
+  // Update date display
+  const dateObj = new Date(iso + 'T00:00:00');
+  const days = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  document.getElementById('date-display').textContent =
+    `${days[dateObj.getDay()]}, ${dateObj.getDate()} ${months[dateObj.getMonth()]} ${y}`;
+
+  try {
+    const url = `${APPS_SCRIPT_URL}?action=admin&date=${encodeURIComponent(ddmmyyyy)}`;
+    const resp = await fetch(url);
+    const result = await resp.json();
+
+    if (result.status === 'ok') {
+      sheetData = result.data || [];
+      processData();
+      renderAll();
+      document.getElementById('last-updated').textContent =
+        'Terakhir diperbarui: ' + new Date().toLocaleTimeString('id-ID');
+    } else {
+      showError(result.message);
+    }
+  } catch(e) {
+    // Demo mode with empty data
+    sheetData = [];
+    processData();
+    renderAll();
+    document.getElementById('last-updated').textContent =
+      'Mode demo (tidak terhubung ke Sheets) · ' + new Date().toLocaleTimeString('id-ID');
+  }
+}
+
+// ══════════════════════════════════
+// PROCESS
+// ══════════════════════════════════
+function processData() {
+  employeeMap = {};
+
+  // Initialize all employees as absent
+  ALL_EMPLOYEES.forEach(emp => {
+    employeeMap[emp.nik] = { name: emp.name, nik: emp.nik, ci: null, mc: null, co: null };
+  });
+
+  // Fill in sheet data
+  const typeMap = {
+    'Morning Check In': 'ci',
+    'Middle Check In':  'mc',
+    'Check Out':        'co'
+  };
+
+  sheetData.forEach(row => {
+    const emp = employeeMap[row.nik];
+    if (!emp) return;
+    const key = typeMap[row.tipe];
+    if (!key) return;
+    if (!emp[key]) { // take first occurrence
+      emp[key] = { jam: row.jam, status: row.status, lat: row.lat, lng: row.lng, foto: row.foto };
+    }
+  });
+}
+
+// ══════════════════════════════════
+// RENDER
+// ══════════════════════════════════
+function renderAll() {
+  updateSummary();
+  renderTable();
+  renderAbsent();
+}
+
+function updateSummary() {
+  const emps = Object.values(employeeMap);
+  const ci = emps.filter(e => e.ci).length;
+  const mc = emps.filter(e => e.mc).length;
+  const co = emps.filter(e => e.co).length;
+  document.getElementById('sum-ci').textContent = ci;
+  document.getElementById('sum-mc').textContent = mc;
+  document.getElementById('sum-co').textContent = co;
+}
+
+function setFilter(f, btn) {
+  activeFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTable();
+}
+
+function renderTable() {
+  const search = document.getElementById('search-input').value.toLowerCase();
+  let emps = Object.values(employeeMap);
+
+  // Search filter
+  if (search) emps = emps.filter(e => e.name.toLowerCase().includes(search) || e.nik.toLowerCase().includes(search));
+
+  // Status filter
+  if (activeFilter === 'checkin')    emps = emps.filter(e => e.ci);
+  if (activeFilter === 'not-ci')     emps = emps.filter(e => !e.ci);
+  if (activeFilter === 'complete')   emps = emps.filter(e => e.ci && e.mc && e.co);
+  if (activeFilter === 'incomplete') emps = emps.filter(e => !(e.ci && e.mc && e.co));
+
+  document.getElementById('table-count').textContent = `${emps.length} karyawan`;
+
+  if (emps.length === 0) {
+    document.getElementById('table-body').innerHTML =
+      '<tr class="loading-row"><td colspan="6" style="color:var(--gray-400);">Tidak ada data ditemukan</td></tr>';
+    return;
+  }
+
+  const body = emps.map((emp, idx) => {
+    const color = AVATAR_COLORS[ALL_EMPLOYEES.findIndex(e => e.nik === emp.nik) % AVATAR_COLORS.length];
+    const initials = emp.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    const complete = emp.ci && emp.mc && emp.co;
+    const hasSome  = emp.ci || emp.mc || emp.co;
+    const done = [emp.ci, emp.mc, emp.co].filter(Boolean).length;
+
+    const completePill = complete
+      ? `<span class="pill pill-done"><span class="pill-dot"></span>Lengkap</span>`
+      : hasSome
+        ? `<span class="pill pill-pending">${done}/3 selesai</span>`
+        : `<span class="pill pill-missing"><span class="pill-dot"></span>Absen</span>`;
+
+    // Foto & Lokasi cell — ambil dari ci atau mc atau co
+    const fotoLinks = ['ci','mc','co'].map(k => {
+      const d = emp[k];
+      if (!d) return '';
+      const fotoBtn = d.foto && d.foto !== '-' && d.foto.startsWith('http')
+        ? `<a class="photo-link" href="${d.foto}" target="_blank">📷 ${k.toUpperCase()}</a>`
+        : '';
+      const locBtn = d.lat && d.lat !== 'N/A'
+        ? `<a class="loc-link" href="https://maps.google.com/?q=${d.lat},${d.lng}" target="_blank">📍</a>`
+        : '';
+      return fotoBtn || locBtn ? `<span style="display:inline-flex;gap:4px;">${fotoBtn}${locBtn}</span>` : '';
+    }).filter(Boolean).join(' ');
+
+    return `<tr>
+      <td>
+        <div class="emp-cell">
+          <div class="emp-avatar" style="background:${color}">${initials}</div>
+          <div>
+            <div class="emp-name">${emp.name}</div>
+            <div class="emp-nik">${emp.nik}</div>
+          </div>
+        </div>
+      </td>
+      <td>${checkinCell(emp.ci, 'CI')}</td>
+      <td>${checkinCell(emp.mc, 'MCi')}</td>
+      <td>${checkinCell(emp.co, 'CO')}</td>
+      <td>${completePill}</td>
+      <td>${fotoLinks || '<span style="color:var(--gray-400);font-size:12px;">—</span>'}</td>
+    </tr>`;
+  }).join('');
+
+  document.getElementById('table-body').innerHTML = body;
+}
+
+function checkinCell(data, label) {
+  if (!data) {
+    return `<span class="pill pill-missing"><span class="pill-dot"></span>Belum</span>`;
+  }
+  const statusPill = data.status === 'Terlambat'
+    ? `<span class="pill pill-late">${data.status}</span>`
+    : `<span class="pill pill-ontime">Tepat Waktu</span>`;
+  return `<div class="checkin-cell">
+    <span class="pill pill-done"><span class="pill-dot"></span>${data.jam}</span>
+    ${statusPill}
+  </div>`;
+}
+
+function renderAbsent() {
+  const absent = Object.values(employeeMap).filter(e => !e.ci && !e.mc && !e.co);
+  const section = document.getElementById('absent-section');
+  const grid = document.getElementById('absent-grid');
+
+  if (absent.length === 0) {
+    section.style.display = 'none';
+    return;
+  }
+
+  section.style.display = 'block';
+  document.getElementById('absent-count').textContent = `${absent.length} orang`;
+
+  grid.innerHTML = absent.map(emp => {
+    const color = AVATAR_COLORS[ALL_EMPLOYEES.findIndex(e => e.nik === emp.nik) % AVATAR_COLORS.length];
+    const initials = emp.name.split(' ').map(w => w[0]).join('').substring(0,2).toUpperCase();
+    return `<div class="absent-chip">
+      <div class="absent-avatar" style="background:${color}">${initials}</div>
+      <div>
+        <div class="absent-name">${emp.name}</div>
+        <div class="absent-nik">${emp.nik}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════
+// MODAL
+// ══════════════════════════════════
+function showPhoto(url, name, info) {
+  document.getElementById('modal-title').textContent = name;
+  document.getElementById('modal-img').src = url;
+  document.getElementById('modal-info').textContent = info;
+  document.getElementById('modal').classList.add('show');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modal')) {
+    document.getElementById('modal').classList.remove('show');
+  }
+}
+
+function showError(msg) {
+  document.getElementById('table-body').innerHTML =
+    `<tr class="loading-row"><td colspan="6" style="color:var(--red-600);">Gagal memuat: ${msg}</td></tr>`;
+}
+</script>
+</body>
+</html>
